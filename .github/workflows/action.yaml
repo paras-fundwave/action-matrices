@@ -42,8 +42,6 @@ jobs:
 
       - name: ${{ matrix.package }} version bump
         uses: phips28/gh-action-bump-version@v9.1.0
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           major-wording: "[bump major]"
           minor-wording: "[bump minor]"

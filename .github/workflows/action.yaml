@@ -33,9 +33,9 @@ jobs:
   publish:
     needs: changes
     strategy:
+      max-parallel: 1
       matrix:
         package: ${{ fromJSON(needs.changes.outputs.packages) }}
-
     runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v3

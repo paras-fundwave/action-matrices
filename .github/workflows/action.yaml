@@ -5,7 +5,7 @@ on:
     paths:
       - auth-layer/**
       - entity-helper/**
-      - .github/workflows/publish.yml
+      - .github/workflows/action.yml
 
 jobs:
   changes:

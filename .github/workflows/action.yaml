@@ -5,6 +5,7 @@ on:
     paths:
       - auth-layer/**
       - entity-helper/**
+      - oidc-consumer/**
       - .github/workflows/action.yml
 
 jobs:

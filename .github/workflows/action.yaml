@@ -62,7 +62,7 @@ jobs:
         run: |
           if [ "$GITHUB_REF_NAME" != "main" ]; then BRANCH_TAG="$GITHUB_REF_NAME"; else BRANCH_TAG=latest; fi
           cd ${{ matrix.package }}
-          if [ "${{ matrix.package }}" != "oidc-consumer" ]; then npm ci --legacy-peer-deps; else npm ci; fi
+          if [ "${{ matrix.package }}" = "oidc-consumer" ]; then npm ci --legacy-peer-deps; else npm ci; fi
           grep version package.json | sed 's/.*"version": "\(.*\)".*/\1/'
 
       - name: Push changes

@@ -6,7 +6,7 @@ on:
       - auth-layer/**
       - entity-helper/**
       - oidc-consumer/**
-      - .github/workflows/action.yml
+      - .github/workflows/action.yaml
 
 jobs:
   changes:
@@ -22,13 +22,13 @@ jobs:
           filters: |
             auth-layer:
               - 'auth-layer/**'
-              - .github/workflows/action.yml
+              - .github/workflows/action.yaml
             entity-helper:
               - 'entity-helper/**'
-              - .github/workflows/action.yml
+              - .github/workflows/action.yaml
             oidc-consumer:
               - 'oidc-consumer/**'
-              - .github/workflows/action.yml
+              - .github/workflows/action.yaml
 
   publish:
     needs: changes

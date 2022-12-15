@@ -1,0 +1,71 @@
+name: Publish packages
+
+on:
+  push:
+    paths:
+      - auth-layer/**
+      - entity-helper/**
+      - .github/workflows/publish.yml
+
+jobs:
+  changes:
+    runs-on: "ubuntu-22.04"
+    outputs:
+      packages: ${{ steps.filter.outputs.changes }}
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: dorny/paths-filter@v2
+        id: filter
+        with:
+          filters: |
+            auth-layer:
+              - 'auth-layer/**'
+              - .github/workflows/action.yml
+            entity-helper:
+              - 'entity-helper/**'
+              - .github/workflows/action.yml
+            oidc-consumer:
+              - 'oidc-consumer/**'
+              - .github/workflows/action.yml
+
+  publish:
+    needs: changes
+    strategy:
+      matrix:
+        package: ${{ fromJSON(needs.changes.outputs.packages) }}
+
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: ${{ matrix.package }} version bump
+        uses: phips28/gh-action-bump-version@v9.1.0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          major-wording: "[bump major]"
+          minor-wording: "[bump minor]"
+          patch-wording: ""
+          rc-wording: ""
+          default: "${{ github.ref_name == 'main' && 'patch' || 'prerelease' }}"
+          preid: "${{ github.ref_name }}"
+          skip-tag: "true"
+          skip-push: "true"
+          PACKAGEJSON_DIR: "${{ matrix.package }}"
+          commit-message: "CI: bumps ${{ matrix.package }} version to {{version}}"
+
+      - name: Publish ${{ matrix.package }} package
+        env:
+          GITLAB_TOKEN: ${{secrets.GITLAB_WRITE_TOKEN}}
+        run: |
+          if [ "$GITHUB_REF_NAME" != "main" ]; then BRANCH_TAG="$GITHUB_REF_NAME"; else BRANCH_TAG=latest; fi
+          cd ${{ matrix.package }}
+          if [ "${{ matrix.package }}" != "oidc-consumer" ]; then npm ci --legacy-peer-deps; else npm ci; fi
+          grep version package.json | sed 's/.*"version": "\(.*\)".*/\1/'
+
+      - name: Push changes
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          branch: ${{ github.ref }}
